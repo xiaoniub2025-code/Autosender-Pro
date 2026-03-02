@@ -1,0 +1,1513 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>AutoSender Pro</title>
+    <link rel="icon" href="static/icon.png">
+    <link rel="stylesheet" href="static/01mainpage.css">
+    <link rel="stylesheet" href="static/04loginpage.css">
+    <!-- <link rel="stylesheet" href="static/05panel_sup.css"> -->
+    <link rel="stylesheet" href="static/0501.css">
+</head>
+
+<body>
+
+    <!--#region    HTML --> 
+
+    <!--#region   主登录页面    Page  -->
+
+    <!--登录页面  -->
+    <div class="login-page" id="loginPage" style="display: flex;">
+        <!-- 标题区域 -->
+        <div class="login-title-area">
+            <div class="login-main-title">AutoSender Pro</div>
+            <div class="login-main-subtitle">IMessage sender</div>
+        </div>
+
+        <!-- 登录面板 -->
+        <div class="login-panel" id="loginPanel">
+            <div class="login-panel-header">
+                <h1 class="login-logo">用户登录</h1>
+            </div>
+
+            <div class="login-panel-content">
+                <!-- Admin 切换按钮 -->
+                <div class="user-admin-toggle">
+                    <button class="toggle-btn btn-admin" id="adminToggle" onclick="switchToAdmin()">AGENT</button>
+                </div>
+
+                <!-- 用户登录表单 -->
+                <div id="userLoginForm">
+                    <form novalidate onsubmit="handleLogin(); return false;">
+                        <div class="form-group">
+                            <input type="text" class="form-input" id="loginUsername" placeholder="用户名"
+                                autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input" id="loginPassword" placeholder="密码"
+                                    autocomplete="current-password">
+                                <button type="button" class="show-password-btn"
+                                    onclick="togglePassword('loginPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="forgot-password">
+                            <a href="#" class="forgot-password-link"
+                                onclick="handleForgotPassword(); return false;">忘记密码？</a>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn-secondary btn-register"
+                                onclick="showRegister()">注册</button>
+                            <button type="submit" class="btn-primary">登录</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 管理员登录表单 -->
+                <div id="adminLoginForm" style="display: none;">
+                    <form novalidate onsubmit="handleAdminLogin(); return false;">
+                        <div class="form-group">
+                            <input type="text" class="form-input" id="adminLoginUsername" placeholder="username"
+                                autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input" id="adminLoginPassword" placeholder="password"
+                                    autocomplete="current-password">
+                                <button type="button" class="show-password-btn"
+                                    onclick="togglePassword('adminLoginPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="forgot-password" style="visibility: hidden;">
+                            <a href="#" class="forgot-password-link">占位</a>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn-secondary" onclick="switchToUser()">返回</button>
+                            <button type="submit" class="btn-primary">登录</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 注册表单 -->
+                <div id="registerForm" style="display: none;">
+                    <form novalidate onsubmit="handleRegister(); return false;">
+                        <div class="form-group">
+                            <input type="text" class="form-input" id="registerUsername" placeholder="请设置用户名"
+                                autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input" id="registerPassword" placeholder="请设置密码,至少4位"
+                                    autocomplete="new-password">
+                                <button type="button" class="show-password-btn"
+                                    onclick="togglePassword('registerPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input" id="registerConfirmPassword"
+                                    placeholder="请确认密码,至少4位" autocomplete="new-password">
+                                <button type="button" class="show-password-btn"
+                                    onclick="togglePassword('registerConfirmPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn-secondary" onclick="showLogin()">返回</button>
+                            <button type="submit" class="btn-primary">确定</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="message-box" id="authMessage"></div>
+            </div>
+        </div>
+
+        <!-- 服务器管理按钮 -->
+        <button class="admin-entry-btn" onclick="showAdminModal()">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+            </svg>
+        </button>
+    </div>
+
+    <!--自定义弹窗-->
+    <div class="custom-modal-overlay" id="customModal">
+        <div class="custom-modal-panel" id="customModalPanel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title" id="customModalTitle">提示</span>
+                <button class="custom-modal-close" onclick="closeCustomModal()">×</button>
+            </div>
+            <div class="custom-modal-content" id="customModalContent">
+                <div class="custom-modal-message" id="customModalMessage"></div>
+                <input type="text" class="custom-modal-input" id="customModalInput" style="display: none;"
+                    placeholder="">
+                <div class="custom-modal-buttons" id="customModalButtons">
+                    <!-- 动态生成按钮 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--服务器管理弹窗 -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <span class="modal-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
+                        <path
+                            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                    </svg>
+                    服务器管理
+                </span>
+            </div>
+            <div class="modal-content">
+                <form onsubmit="event.preventDefault(); verifyAdminPassword();" autocomplete="off" style="display: flex; flex-direction: column; align-items: center;">
+                    <input type="text" name="username" autocomplete="username" style="display:none;" value="admin">
+                    <input type="password" class="modal-input" id="adminPasswordInput" placeholder="请输入服务器管理密码"
+                        autocomplete="current-password" style="text-align: center;">
+                    <div style="display: flex; gap: 15px; width: 100%; justify-content: center;">
+                        <button type="button" class="modal-btn modal-btn-cancel" style="flex: 1; max-width: 80px; border: 2px solid #000000;" onclick="closeAdminModal()">取 消</button>
+                        <button type="submit" class="modal-btn modal-btn-confirm" style="flex: 1; max-width: 80px;border: 2px solid #000000;">确 认</button>
+                    </div>
+                    <div class="modal-message" id="adminMessage"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--#endregion-->
+
+    <!--#region   主应用页面    Page  -->
+
+    <!-- 应用面板  -->
+    <div class="content-wrapper" style="display: none;">
+        <!-- 导航按钮栏 -->
+        <div class="nav-container">
+            <div class="nav-buttons">
+                <button class="nav-btn active" id="navHomeBtn">主页面</button>
+                <button class="nav-btn" id="navAccountBtn">账号管理</button>
+                <button class="nav-btn" id="navSendBtn">IMessage</button>
+                <button class="nav-btn" id="navInboxBtn">收件箱
+                    <div class="notification-count">0</div>
+                </button>
+                <button class="nav-btn" id="navLogoutBtn" onclick="handleLogout()">退出账号</button>
+            </div>
+        </div>
+        <div class="main-container" style="display: none;">
+            <!-- 工作区A+B -->
+            <div class="workspace-ab" id="workspaceAB" style="display: none;">
+                <!-- A版面板 -->
+                <div class="panel-a" style="position: relative;">
+                    <div class="manager-time-display" id="mainPageTimeDisplay"
+                        style="left: auto; right: 0; top: -40px; transform: none;">
+                        <span class="time-date" id="mainPageTimeDate">--/--/----</span>
+                        <span class="time-clock" id="mainPageTimeClock">--:--</span>
+                    </div>
+                    <div class="panel-header">
+                        <span>AutoSender Pro</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="currency-toggle credit" id="currencyToggle" onclick="toggleCurrencyMode()">
+                                <div class="toggle-slider"></div>
+                                <div class="toggle-label label-credit">积分</div>
+                                <div class="toggle-label label-count">可用</div>
+                            </div>
+                            <span id="userInfoDisplay"
+                                style="font-family: 'Xiaolai', sans-serif; font-size: 12px; color: var(--text-dark); display: none;">
+                                <span id="creditLabel">剩余积分:</span> <span id="currentCredits">-</span>
+                            </span>
+                            <div class="connection-status" id="connectionStatus"><span>连接中...</span></div>
+                        </div>
+                    </div>
+
+                    <div class="panel-content">
+                        <div class="content-area">
+                            <!-- 左侧号码输入框 -->
+                            <div class="numbers-container">
+                                <div class="input-header">
+                                    <div class="input-title">发送号码</div>
+                                    <div class="input-actions">
+                                        <button class="btn-icon" id="importNumbersBtn" title="导入">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+                                            </svg>
+                                        </button>
+                                        <button class="btn-icon" id="clearNumbersBtn" title="清空">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path
+                                                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-area">
+                                    <textarea id="numbersText" placeholder="输入目标号码，每行一个"></textarea>
+                                    <div class="char-count" id="numbersCount">号码: 0</div>
+                                </div>
+                                <!-- 延长按钮 -->
+                                <div class="anchor-trigger" id="numTrigger"></div>
+                            </div>
+
+                            <!-- 右侧消息输入框 -->
+                            <div class="message-container">
+                                <div class="input-header">
+                                    <div class="input-title">发送内容</div>
+                                    <div class="input-actions">
+                                        <button class="btn-icon" id="importMessageBtn" title="导入">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+                                            </svg>
+                                        </button>
+                                        <button class="btn-icon" id="clearMessageBtn" title="清空">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path
+                                                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-area">
+                                    <textarea id="messageText" placeholder="输入要发送的消息内容"></textarea>
+                                    <div class="char-count" id="messageCount">字符: 0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-bar">
+                            <button class="btn-log-panel" id="logPanelBtn">日志面板</button>
+                            <!-- A版中的统计栏（当B版未打开时显示） -->
+                            <div class="stats-bar-inline" id="statsBarInline">
+                                <div class="stat-item">任务次数: <span class="stat-value" id="taskCountInline">0</span>
+                                </div>
+                                <div class="stat-item">总号码: <span class="stat-value" id="phoneCountInline">0</span>
+                                </div>
+                                <div class="stat-item">总数量: <span class="stat-value" id="totalSentCountInline">0</span>
+                                </div>
+                                <div class="stat-item">成功: <span class="stat-value" id="successCountInline">0</span>
+                                </div>
+                                <div class="stat-item">失败: <span class="stat-value" id="failCountInline">0</span></div>
+                                <div class="stat-item">成功率: <span class="stat-value" id="successRateInline">0%</span>
+                                </div>
+                            </div>
+                            <div class="interval-control">
+                                <span class="interval-label">发送间隔:</span>
+                                <select class="interval-select" id="intervalInput">
+                                    <option value="0.3">0.3s</option>
+                                    <option value="0.7">0.7s</option>
+                                    <option value="1.0" selected>1.0s</option>
+                                    <option value="1.5">1.5s</option>
+                                    <option value="2.0">2.0s</option>
+                                </select>
+                            </div>
+                            <button class="btn-send" id="sendBtn">发送</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- B版面板（桌面端AB并排） -->
+                <div class="panel-b desktop-only">
+                    <div class="panel-header">
+                        <span>任务日志</span>
+                    </div>
+                    <div class="panel-content" style="position: relative;">
+                        <div class="log-box" id="statusList">
+                            <!-- 日志内容将通过JavaScript动态添加 -->
+                        </div>
+                        <div class="log-box failed-details-panel" id="failedDetailsPanel" style="display:none;">
+                            <div id="failedDetailsList"></div>
+                        </div>
+                        <button class="btn-failed-details" id="failedDetailsBtn" style="display:none;">失败号码详情</button>
+                        <!-- 清空按钮 - 放在日志容器右下角 -->
+                        <button class="btn-clear-logs" id="clearLogsBtn" title="清空日志">清空</button>
+                        <div class="failed-actions" id="failedActions" style="display:none;">
+                            <button id="failedImportBtn" title="导入发送号码">导入</button>
+                            <button id="failedSaveBtn" title="保存到用户面板">保存</button>
+                            <button id="failedBackBtn">返回</button>
+                        </div>
+                        <div class="stats-bar">
+                            <div class="stat-item">任务次数: <span class="stat-value" id="taskCount">0</span></div>
+                            <div class="stat-item">总号码: <span class="stat-value" id="phoneCount">0</span></div>
+                            <div class="stat-item">总数量: <span class="stat-value" id="totalSentCount">0</span></div>
+                            <div class="stat-item">成功: <span class="stat-value" id="successCount">0</span></div>
+                            <div class="stat-item">失败: <span class="stat-value" id="failCount">0</span></div>
+                            <div class="stat-item">成功率: <span class="stat-value" id="successRate">0%</span></div>
+                        </div>
+                        <!-- 延长按钮 -->
+                        <div class="anchor-trigger" id="logTrigger"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- B版面板（移动端独立显示） -->
+            <div class="panel-b-mobile" id="panelB">
+                <div class="panel-header">
+                    <span>任务日志</span>
+                </div>
+                <div class="panel-content">
+                    <div class="log-box" id="statusListMobile">
+                        <!-- 日志内容将通过JavaScript动态添加 -->
+                    </div>
+                    <div class="log-box failed-details-panel" id="failedDetailsPanelMobile" style="display:none;">
+                        <div id="failedDetailsListMobile"></div>
+                    </div>
+                    <div class="stats-bar">
+                        <div class="stat-item">任务次数: <span class="stat-value" id="taskCountMobile">0</span></div>
+                        <div class="stat-item">总号码: <span class="stat-value" id="phoneCountMobile">0</span></div>
+                        <div class="stat-item">总数量: <span class="stat-value" id="totalSentCountMobile">0</span></div>
+                        <div class="stat-item">成功: <span class="stat-value" id="successCountMobile">0</span></div>
+                        <div class="stat-item">失败: <span class="stat-value" id="failCountMobile">0</span></div>
+                        <div class="stat-item">成功率: <span class="stat-value" id="successRateMobile">0%</span></div>
+                    </div>
+                    <!-- 底部按钮区域 -->
+                    <div class="panel-b-controls">
+                        <button class="btn-back-to-send" id="backToSendBtn">IMessage</button>
+                        <button class="btn-failed-details" id="failedDetailsBtnMobile" style="display:none;">失败号码详情</button>
+                        <button class="btn-clear-logs-mobile" id="clearLogsBtnMobile" title="清空日志">清空</button>
+                    </div>
+                    <div class="failed-actions failed-actions-mobile" id="failedActionsMobile" style="display:none;">
+                        <button id="failedImportBtnMobile" title="导入发送号码">导入</button>
+                        <button id="failedSaveBtnMobile" title="保存到用户面板">保存</button>
+                        <button id="failedBackBtnMobile">返回</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 欢迎面板 -->
+            <div class="panel-d" id="panelD" style="display: none;">
+                <div class="main-title">AutoSender Pro</div>
+                <div class="main-subtitle">IMessage sender</div>
+            </div>
+            <!-- 收件箱面板 -->
+            <div class="panel-c" id="panelC" style="display: none;">
+                <div class="panel-header">
+                    <span>收件箱</span>
+                    <span id="inboxStats"
+                        style="font-family: 'Xiaolai', sans-serif; font-size: 13px; padding: 4px 10px; background: rgba(47, 47, 47, 0.1); border-radius: 12px;">接收:
+                        0 发送: 0 总数: 0</span>
+                </div>
+                <div class="panel-content">
+                    <div class="inbox-layout">
+                        <div class="contact-list" id="contactList" style="position: relative;">
+                            <!-- 联系人列表将通过JavaScript动态添加 -->
+                            <button class="btn-clear-inbox" id="clearInboxBtn" title="全部删除">全部删除</button>
+                        </div>
+                        <div class="chat-area">
+                            <div class="chat-header" id="chatHeader"
+                                style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                                <span class="phone-number" id="chatPhoneNumber" style="flex: 1;">选择一个对话</span>
+                                <div id="exclusivePhoneSelector" style="display: none; position: relative;">
+                                    <button id="exclusivePhoneBtn"
+                                        style="padding: 6px 12px; background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border: 2px solid var(--border-dark); border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; white-space: nowrap;">
+                                        本机号码: <span id="currentPhoneDisplay">-</span> <span
+                                            style="font-size: 10px;">▼</span>
+                                    </button>
+                                    <div id="exclusivePhoneDropdown"
+                                        style="display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; background: white; border: 2px solid var(--border-dark); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1000; min-width: 150px; max-height: 200px; overflow-y: auto;">
+                                        <!-- 动态生成号码列表 -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-display" id="conversationDisplay">
+                                <!-- 对话内容将通过JavaScript动态添加 -->
+                            </div>
+                            <div class="reply-bar">
+                                <input type="text" class="reply-input" id="replyInput" placeholder="输入回复消息...">
+                                <button class="btn-send-reply" id="sendReplyBtn">发送</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 账号管理面板 -->
+            <div class="panel-e" id="panelE" style="display: none;">
+                <div class="panel-header">
+                    <span>账号管理</span>
+                </div>
+                <div class="panel-content">
+                    <!-- 账号管理内容区域 -->
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- 文件输入-->
+    <input type="file" id="numbersFile" class="file-input" accept=".txt,.csv">
+    <input type="file" id="messageFile" class="file-input" accept=".txt">
+
+    <!--#endregion -->
+
+    <!--#region   服务器管理    Page  -->
+
+    <div class="admin-page" id="adminPage">
+        <div class="admin-container">
+            <!-- 头部 -->
+            <div class="server-manager-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h1>🔧 服务器管理 (Server Manager)</h1>
+                    <button class="admin-back-btn btn-super-admin-small" onclick="showSuperAdminPasswordModal()">🔴系统后台管理</button>
+                </div>
+                <div class="manager-time-display" id="serverTimeDisplay">
+                    <span class="time-date" id="serverTimeDate">--/--/----</span>
+                    <span class="time-clock" id="serverTimeClock">--:--</span>
+                </div>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <button class="admin-back-btn btn-id-library" onclick="showIdLibraryModal()"
+                        style="padding: 10px 12px;font-size: 13px;">账号列表</button>
+                    <button class="admin-back-btn" onclick="showSelectPanelModal()"
+                        style="padding: 10px 12px;font-size: 13px;background: #e2ff0b;">修改密码</button>
+                    <button class="admin-back-btn btn-exit" onclick="backToLogin()"
+                        style="padding: 10px 12px;font-size: 13px;">保存退出</button>
+                </div>
+            </div>
+
+            <!-- 已连接和已断开服务器 -->
+            <div class="server-status-section">
+                <div class="server-status-header">
+                    已连接 <span class="count" id="connectedCount">(0)</span>
+                </div>
+                <div class="server-buttons-grid" id="connectedServers">
+                    <!-- 动态生成 -->
+                </div>
+
+                <div class="server-status-divider"></div>
+
+                <div class="server-status-header">
+                    已断开 <span class="count" id="disconnectedCount">(0)</span>
+                </div>
+                <div class="server-buttons-grid" id="disconnectedServers">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 管理员-账户管理  -->
+            <div class="admin-account-section">
+                <h3>👤 创建管理员账号</h3>
+                <div style="margin-bottom: 15px;">
+                    <button class="admin-account-btn confirm" onclick="showAddAdminModal()">添加管理员</button>
+                </div>
+                <div class="admin-account-list" id="adminAccountList">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- (修改密码)选择面板 -->
+    <div class="custom-modal-overlay" id="selectPanelModal">
+        <div class="custom-modal-panel" style="max-width: 400px;">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">🔐请选择面板</span>
+                <button class="custom-modal-close" onclick="closeSelectPanelModal()">×</button>
+            </div>
+            <div class="custom-modal-content" style="padding: 24px 20px;">
+                <div style="display: flex; flex-direction: row; gap: 15px; justify-content: center;">
+                    <button class="custom-modal-btn confirm" style="padding: 10px 16px; font-size: 13px; flex: 0 0 auto;"
+                        onclick="onSelectServerManagerPanel()">
+                        🖥️ 服务器管理面板
+                    </button>
+                    <button class="custom-modal-btn confirm" style="padding: 10px 16px; font-size: 13px; background: linear-gradient(135deg, #fe1111, #f80606); flex: 0 0 auto;"
+                        onclick="onSelectSuperAdminPanel()">
+                        🔴 系统后台面板
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- (修改密码)服务器管理   -->
+    <div class="custom-modal-overlay" id="passwordChangeModal">
+        <div class="custom-modal-panel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">🔐 服务器管理密码设置</span>
+                <button class="custom-modal-close" onclick="closePasswordChangeModal()">×</button>
+            </div>
+            <div class="custom-modal-content">
+                <form onsubmit="event.preventDefault(); updateServerManagerPassword();" autocomplete="off">
+                    <input type="text" name="username" autocomplete="username" style="display:none;"
+                        value="server-manager">
+                    <input type="password" class="custom-modal-input" id="oldPasswordInput" placeholder="请输入旧密码"
+                        autocomplete="current-password">
+                    <input type="password" class="custom-modal-input" id="newPasswordInput" placeholder="新密码"
+                        autocomplete="new-password">
+                    <div class="custom-modal-buttons">
+                        <button type="button" class="custom-modal-btn cancel"
+                            onclick="closePasswordChangeModal()">取消</button>
+                        <button type="submit" class="custom-modal-btn confirm">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- (修改密码)超级管理员  -->
+    <div class="custom-modal-overlay" id="superAdminPasswordChangeModal">
+        <div class="custom-modal-panel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">🔐 超级管理员密码设置</span>
+                <button class="custom-modal-close" onclick="closeSuperAdminPasswordChangeModal()">×</button>
+            </div>
+            <div class="custom-modal-content">
+                <form onsubmit="event.preventDefault(); updateSuperAdminPassword();" autocomplete="off">
+                    <input type="text" name="username" autocomplete="username" style="display:none;"
+                        value="super-admin">
+                    <input type="password" class="custom-modal-input" id="superAdminOldPasswordInput" placeholder="请输入旧密码"
+                        autocomplete="current-password">
+                    <input type="password" class="custom-modal-input" id="superAdminNewPasswordInput" placeholder="新密码"
+                        autocomplete="new-password">
+                    <div class="custom-modal-buttons">
+                        <button type="button" class="custom-modal-btn cancel"
+                            onclick="closeSuperAdminPasswordChangeModal()">取消</button>
+                        <button type="submit" class="custom-modal-btn confirm">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ID库面板  -->
+    <div class="custom-modal-overlay" id="idLibraryModal" style="display: none;">
+        <div class="custom-modal-panel id-library-panel">
+            <div class="custom-modal-header id-library-header">
+                <span class="custom-modal-title">📋 ID库 - 账号管理</span>
+                <button class="custom-modal-close" onclick="closeIdLibraryModal()">×</button>
+            </div>
+            <div class="custom-modal-content id-library-content">
+                <!-- 顶部操作栏 -->
+                <form onsubmit="event.preventDefault(); saveIdLibraryAccount();" autocomplete="off">
+                    <div class="id-library-toolbar">
+<div class="id-library-input-group">
+                            <label for="idLibraryAppleId">APPLE ID</label>
+                            <input type="text" class="id-library-input" id="idLibraryAppleId" placeholder="输入Apple ID邮箱"
+                                autocomplete="username">
+                        </div>
+                        <div class="id-library-input-group">
+                            <label for="idLibraryPassword">PASSWORD</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="id-library-input" id="idLibraryPassword"
+                                    placeholder="输入密码" autocomplete="current-password">
+                                <button type="button" class="password-toggle-btn"
+                                    onclick="toggleIdLibraryPassword()">👁</button>
+                            </div>
+                        </div>
+                        <button type="submit" class="id-library-btn btn-save">💾 保存</button>
+                        <button type="button" class="id-library-btn btn-import" onclick="importIdLibraryAccounts()">📂
+                            导入</button>
+                        <button type="button" class="id-library-btn btn-clear" onclick="clearAllIdLibraryAccounts()">🗑️
+                            清空</button>
+                    </div>
+                </form>
+
+                <!-- 账号列表区域 -->
+                <div class="id-library-list-container">
+                    <div class="id-library-list-header">
+                        <span class="header-col col-index">#</span>
+                        <span class="header-col col-account">账号</span>
+                        <span class="header-col col-password">密码</span>
+                        <span class="header-col col-status">状态</span>
+                        <span class="header-col col-usage-status">使用状态</span>
+                        <span class="header-col col-actions">操作</span>
+                    </div>
+                    <div class="id-library-list" id="idLibraryList">
+                        <!-- 账号列表项将通过JavaScript动态添加 -->
+                        <div class="id-library-empty">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">暂无账号</div>
+                            <div class="empty-hint">点击"保存"添加账号，或"导入"批量导入</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部统计栏 -->
+                <div class="id-library-footer">
+                    <div class="id-library-stats">
+                        <span class="stat-item">总数: <strong id="idLibraryTotal">0</strong></span>
+                        <span class="stat-item">正常: <strong id="idLibraryNormal"
+                                style="color: #00d4aa;">0</strong></span>
+                        <span class="stat-item">异常: <strong id="idLibraryError"
+                                style="color: #ff6b6b;">0</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 超级管理员弹窗  -->
+    <div class="custom-modal-overlay" id="superAdminPasswordModal" style="display: none;">
+        <div class="custom-modal-panel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">🔴 系统后台管理</span>
+                <button class="custom-modal-close" onclick="closeSuperAdminPasswordModal()">×</button>
+            </div>
+            <div class="custom-modal-content">
+                <form onsubmit="event.preventDefault(); verifySuperAdminPassword();" autocomplete="off">
+                    <input type="text" name="username" autocomplete="username" style="display:none;"
+                        value="super-admin">
+                    <input type="password" class="custom-modal-input" id="superAdminPasswordInput"
+                        placeholder="请输入密码" autocomplete="current-password">
+                    <div class="custom-modal-buttons">
+                        <button type="button" class="custom-modal-btn cancel"
+                            onclick="closeSuperAdminPasswordModal()">取消</button>
+                        <button type="submit" class="custom-modal-btn confirm">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加管理员弹窗 -->
+    <div class="custom-modal-overlay" id="addAdminModal">
+        <div class="custom-modal-panel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">👤 添加管理员账号</span>
+                <button class="custom-modal-close" onclick="closeAddAdminModal()">×</button>
+            </div>
+            <div class="custom-modal-content">
+                <form onsubmit="event.preventDefault(); addAdminAccount();" autocomplete="off">
+                    <input type="text" class="custom-modal-input" id="newAdminId" placeholder="管理员ID"
+                        autocomplete="username">
+                    <input type="password" class="custom-modal-input" id="newAdminPassword" placeholder="密码"
+                        autocomplete="new-password">
+                    <div class="custom-modal-buttons">
+                        <button type="button" class="custom-modal-btn cancel" onclick="closeAddAdminModal()">取消</button>
+                        <button type="submit" class="custom-modal-btn confirm">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- #endregion-->
+
+    <!--#region   管理员页面    Page  -->
+
+    <!-- 管理员面板-->
+    <div class="manager-page" id="managerPage" style="display: none;">
+        <div class="manager-container">
+            <!-- Header -->
+            <div class="manager-header">
+                <div class="manager-header-left">
+                    <span style="margin-right: 20px;">管理员: <span id="managerIdDisplay">-</span></span>
+                    <span style="margin-right: 20px;">客户: <span id="managerUserCountDisplay">0</span></span>
+                    <span style="margin-right: 20px;">总业绩: <span id="totalPerformanceDisplay">0</span></span>
+                </div>
+                <div class="manager-time-display" id="managerTimeDisplay">
+                    <span class="time-date" id="managerTimeDate">--/--/----</span>
+                    <span class="time-clock" id="managerTimeClock">--:--</span>
+                </div>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <button class="admin-back-btn btn-exit" onclick="backToLogin()"
+                        style="padding: 10px 12px;font-size: 13px;">保存退出</button>
+                </div>
+            </div>
+
+            <!-- 面板0：在线服务器 -->
+            <div class="manager-section" id="onlineServersPanel">
+                <div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 15px;">
+                    <h3 class="panel-title" style="margin: 0;">在线服务器</h3>
+                    <div style="position: relative;">
+                        <button id="onlineServersHelpBtn" class="help-btn" onclick="const t=document.getElementById('onlineServersHelpTooltip'); const show = t.style.visibility!=='visible'; t.style.opacity=show?'1':'0'; t.style.visibility=show?'visible':'hidden';" style="width: 16px; height: 16px; border-radius: 50%; background: #4facfe; color: white; border: none; cursor: pointer; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center;">?</button>                        
+                        <div id="onlineServersHelpTooltip" style="position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); background-color: #000000; color: #ffffff; padding: 10px 15px; border-radius: 8px; font-size: 12px; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; pointer-events: none; z-index: 2147483647; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); min-width: 150px;">
+                            <div style="font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 3px;">说明</div>
+                            <div style="font-size: 12px; color: #ffffff; line-height: 1.4;">随机显示10个服务器状态</div>
+                            <div style="position: absolute; right: 100%; top: 50%; transform: translateY(-50%); border: 6px solid transparent; border-right-color: #000000;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="server-buttons-grid" id="onlineServersDisplay">
+                </div>
+            </div>
+
+            <!-- 面板1：可分配服务器 -->
+            <div class="manager-section" id="availableServersPanel">
+                <h3 class="panel-title">可分配服务器</h3>
+                <div id="managerAvailableServers">
+                    <!-- 动态生成服务器按钮 -->
+                </div>
+            </div>
+
+            <!-- 面板2：用户列表 -->
+            <div class="manager-section" id="userListPanel">
+                <div class="panel-header-row">
+                    <h3 class="panel-title">用户列表</h3>
+                    <button class="add-user-btn" onclick="showAddUserModal()">添加用户</button>
+                </div>
+                <div class="user-buttons-grid" id="userList">
+                    <!-- 动态生成用户按钮 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加用户弹窗  -->
+    <div class="custom-modal-overlay" id="addUserModal">
+        <div class="custom-modal-panel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">👤 添加用户</span>
+                <button class="custom-modal-close" onclick="closeAddUserModal()">×</button>
+            </div>
+            <div class="custom-modal-content">
+                <input type="text" class="custom-modal-input" id="addUserUsername" placeholder="输入 用户名 或 ID">
+                <div class="custom-modal-buttons">
+                    <button class="custom-modal-btn cancel" onclick="closeAddUserModal()">取消</button>
+                    <button class="custom-modal-btn confirm" onclick="confirmAddUser()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户详情管理弹窗  -->
+    <div class="custom-modal-overlay" id="userDetailModal">
+        <div class="custom-modal-panel user-detail-panel">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">👤 用户详情</span>
+                <button class="custom-modal-close" onclick="closeUserDetailModal()">×</button>
+            </div>
+            <div class="custom-modal-content user-detail-content" id="userDetailContent">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 超级管理员-管理员详情弹窗（占位） -->
+    <div class="custom-modal-overlay" id="saAdminDetailModal" style="display: none; z-index: 12000;" onclick="if(event.target===this) saCloseAdminDetailModal()">
+        <div class="custom-modal-panel" style="width: 360px; max-width: 90vw;">
+            <div class="custom-modal-header">
+                <span class="custom-modal-title">管理员详情</span>
+                <button class="custom-modal-close" onclick="saCloseAdminDetailModal()">×</button>
+            </div>
+            <div class="custom-modal-content" id="saAdminDetailContent" style="min-height: 120px;">
+                <!-- 占位：后续再加内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!--#endregion -->
+
+    <!--#region   超级管理员    Page  -->
+    <div class="custom-modal-overlay" id="superAdminPanel" style="display: none;">
+        <div class="custom-modal-panel super-admin-panel-container">
+            <!-- Left Sidebar -->
+            <div class="super-admin-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-logo">后台管理系统 </div>
+                    <div class="sidebar-subtitle">控制中心</div>
+                </div>
+                <nav class="sidebar-nav">
+                    <button class="sidebar-btn active" onclick="switchSuperAdminTab('servers')">
+                        <span class="icon">🖥️</span> 服务器管理
+                    </button>
+                    <button class="sidebar-btn expandable" onclick="toggleSubmenu('submenu-data', this); switchSuperAdminTab('users', 'server')">
+                        <span class="icon">👥</span> 数据管理 
+                    </button>
+                    <div class="sidebar-submenu" id="submenu-data">
+                        <button class="sidebar-submenu-btn" onclick="switchSuperAdminTab('users', 'server')">
+                            <span class="dot"></span> 服务器数据
+                        </button>
+                        <button class="sidebar-submenu-btn" onclick="switchSuperAdminTab('users', 'user')">
+                            <span class="dot"></span> 用户数据
+                        </button>
+                        <button class="sidebar-submenu-btn" onclick="switchSuperAdminTab('users', 'admin')">
+                            <span class="dot"></span> 管理员数据
+                        </button>
+                    </div>
+                    <button class="sidebar-btn" onclick="switchSuperAdminTab('recharge')">
+                        <span class="icon">💰</span> 充值
+                    </button>
+                    <button class="sidebar-btn" id="saTabRates" onclick="switchSuperAdminTab('rates')">
+                        <span class="icon">📈</span> 费率设置
+                    </button>
+                    <button class="sidebar-btn expandable" onclick="toggleSubmenu('submenu-logs', this)">
+                        <span class="icon">📝</span> 系统日志 
+                    </button>
+                    <div class="sidebar-submenu" id="submenu-logs">
+                        <button class="sidebar-submenu-btn" onclick="switchSuperAdminTab('logs', 'INFO')">
+                            <span class="dot"></span> INFO
+                        </button>
+                        <button class="sidebar-submenu-btn" onclick="switchSuperAdminTab('logs', 'SYSTEM')">
+                            <span class="dot"></span> SYSTEM
+                        </button>
+                        <button class="sidebar-submenu-btn" onclick="switchSuperAdminTab('logs', 'ACCESS')">
+                            <span class="dot"></span> 访问记录
+                        </button>
+                    </div>
+                    <button class="sidebar-btn" onclick="switchSuperAdminTab('settings')">
+                        <span class="icon">⚙️</span> 设置
+                    </button>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="sidebar-btn backup-btn" onclick="closeSuperAdminPanel()">
+                        <span class="icon">↩️</span> 返回
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Main Area -->
+            <div class="super-admin-main-area">
+                <div class="main-area-header">
+                    <div class="header-title">
+                        <span class="status-indicator online"></span>
+                        <span>MAC OS SERVERS</span>
+                    </div>
+                    <div class="manager-time-display" id="superAdminTimeDisplay"
+                        style="left: auto; right: 50px; transform: none;">
+                        <span class="time-date" id="superAdminTimeDate">--/--/----</span>
+                        <span class="time-clock" id="superAdminTimeClock">--:--</span>
+                    </div>
+                    <button class="close-btn" onclick="closeSuperAdminPanel()">×</button>
+                </div>
+
+                <div class="main-area-content">
+                    <!-- 提示气泡组件 -->
+                    <div id="saToast" class="sa-toast"></div>
+
+                    <!-- 服务器列表 (默认显示) -->
+                    <div class="servers-radar-section" id="superAdminServersSection">
+                        <div class="super-admin-servers-grid" id="superAdminServersList">
+                            <!-- Dynamically generated Radar Bots -->
+                        </div>
+                    </div>
+
+                    <!-- 数据管理面板 -->
+                    <div id="superAdminUserSection" style="display: none; height: 100%; padding: 20px; overflow-y: auto;">
+                        <!-- 三个切换按钮 -->
+                        <div class="sa-data-tabs">
+                            <button class="sa-data-tab-btn" id="btnSaDataServer"
+                                onclick="saSwitchDataTab('server')">服务器数据</button>
+                            <button class="sa-data-tab-btn" id="btnSaDataUser"
+                                onclick="saSwitchDataTab('user')">用户数据</button>
+                            <button class="sa-data-tab-btn" id="btnSaDataAdmin"
+                                onclick="saSwitchDataTab('admin')">管理员数据</button>
+                        </div>
+
+                        <!-- 服务器数据面板 -->
+                        <div id="saDataServerPanel" style="display: none; height: calc(100vh - 180px);">
+                            <div class="server-data-panel" style="height: 100%; overflow-y: auto;">
+                                <!-- 顶部状态栏 - 第一行 -->
+                                <div class="status-bar-row">
+                                    <div class="status-item-inline">
+                                        <span class="label">服务器状态:</span>
+                                        <span id="saServerStatus" class="value running">RUNNING</span>
+                                    </div>
+                                    <div class="status-item-inline">
+                                        <span class="label">启动时间:</span>
+                                        <span id="saServerStartTime" class="value">-</span>
+                                    </div>
+                                    <div class="status-item-inline">
+                                        <span class="label">已运行:</span>
+                                        <span id="saServerUptime" class="value">-</span>
+                                    </div>
+                                    <div class="status-item-inline">
+                                        <span class="label">错误日志:</span>
+                                        <span id="saErrorLogs" class="value error">0</span>
+                                    </div>
+                                </div>
+
+                                <!-- 第二行状态 -->
+                                <div class="status-bar-row">
+                                    <div class="status-item-inline">
+                                        <span class="label">在线用户:</span>
+                                        <span id="saOnlineUsers" class="value">0</span>
+                                    </div>
+                                    <div class="status-item-inline">
+                                        <span class="label">可用服务器:</span>
+                                        <span id="saAvailableServers" class="value">0</span>
+                                    </div>
+                                    <div class="status-item-inline">
+                                        <span class="label">新注册:</span>
+                                        <span id="saNewUsers" class="value">0</span>
+                                    </div>
+                                    <div class="status-item-inline">
+                                        <span class="label">总收入:</span>
+                                        <span id="saTotalIncome" class="value success">$0</span>
+                                    </div>
+                                </div>
+
+                                <!-- 近期数据统计表格 -->
+                                <div class="stats-section">
+                                    <div class="section-title">近期数据统计:</div>
+                                    <table class="stats-table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>发送</th>
+                                                <th>接收</th>
+                                                <th>成功率</th>
+                                                <th>注册</th>
+                                                <th>访问</th>
+                                                <th>消费</th>
+                                                <th>收入</th>
+                                                <th>总收入</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="saStatsRows">
+                                            <tr><td>今天:</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                            <tr><td>昨天:</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                            <tr><td>前天:</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- 底部记录区域 -->
+                                <div class="records-grid">
+                                    <div class="record-section record-green">
+                                        <div class="section-title highlight-yellow">充值记录</div>
+                                        <div class="record-summary record-summary-stack recharge-summary">
+                                            <span class="summary-label">服务器所有的充值次数:</span>
+                                            <span>所有:<span id="saRechargeAllCount" class="value">0</span></span>
+                                            <span>今天:<span id="saRechargeToday" class="value">0</span></span>
+                                            <span>总计:<span id="saRechargeTotal" class="value">0</span></span>
+                                        </div>
+                                        <div id="saRechargeRecords" class="record-list"></div>
+                                    </div>
+
+                                    <div class="record-section record-blue">
+                                        <div class="section-title highlight-yellow">发送记录</div>
+                                        <div class="record-summary record-summary-stack send-summary">
+                                            <span>发送:<span id="saSendSum" class="value">0</span></span>
+                                            <span>接收:<span id="saRecvSum" class="value">0</span></span>
+                                            <span>计费:<span id="saBillSum" class="value">0</span></span>
+                                        </div>
+                                        <div id="saSendRecords" class="record-list"></div>
+                                    </div>
+
+                                    <div class="record-section record-purple">
+                                        <div class="section-title highlight-yellow">费率记录</div>
+                                        <div class="record-summary">
+                                            <span>用户费率设置:<span id="saRateUserCount" class="value user-rate">0</span></span>
+                                            <span>管理员范围设置:<span id="saRateAdminCount" class="value admin-rate">0</span></span>
+                                        </div>
+                                        <div id="saRateRecords" class="record-list"></div>
+                                    </div>
+
+                                    <div class="record-section record-orange">
+                                        <div class="section-title highlight-yellow">服务器记录</div>
+                                        <div class="record-summary">
+                                            <span>历史总数:<span id="saServerHistoryTotal" class="value">0</span></span>
+                                            <span>当前:<span id="saServerCurrent" class="value success">0</span></span>
+                                            <span>断开:<span id="saServerDisconnected" class="value error">0</span></span>
+                                        </div>
+                                        <div id="saServerRecords" class="record-list server-grid"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- 用户数据面板 -->
+                        <div id="saDataUserPanel" style="display: none; height: calc(100vh - 180px);">
+                            <div style="display: flex; align-items: center; margin-top: 20px; gap: 20px; height: 40px;">
+                                <span style="font-size: 14px; color: #fff;">注册用户: <span id="saTotalUserCount"
+                                        style="color: #4facfe; font-weight: bold;">0</span></span>
+                                <span id="saSearchIcon" class="sa-search-icon" onclick="saToggleUserSearch()">🔍</span>
+                                <div id="saUserSearchContainer" style="display: none; align-items: center; gap: 10px;">
+                                    <input type="text" id="saUserSearchInput" placeholder="输入用户ID或用户名"
+                                        style="width: 140px; background: #2d2d42; border: 1px solid #555; color: #fff; padding: 6px 12px; border-radius: 4px; outline: none; font-size: 13px;"
+                                        onkeypress="if(event.key==='Enter') saConfirmUserSearch()">
+                                    <button onclick="saConfirmUserSearch()"class="sa-search-confirm-btn" style ="width:80px; padding: 8px 12px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;">确定</button>
+                                </div>
+                            </div>
+                            <div id="saAllUserList" class="user-buttons-grid" style="margin-top: 20px; overflow-y: auto; grid-template-columns: repeat(4, 1fr); gap: 30px;"></div>
+                        </div>
+                        
+
+                        <!-- 管理员数据面板 -->
+                        <div id="saDataAdminPanel" style="display: none; height: calc(100vh - 180px);">
+                            <div style="display: flex; align-items: center; margin-top: 20px; gap: 20px; height: 40px;">
+                                <span style="font-size: 14px; color: #fff;">管理员: <span id="saTotalAdminCount"
+                                        style="color: #4facfe; font-weight: bold;">0</span></span>
+                                <span id="saAdminSearchIcon" class="sa-search-icon" onclick="saToggleAdminSearch()">🔍</span>
+                                <div id="saAdminSearchContainer" style="display: none; align-items: center; gap: 10px;">
+                                    <input type="text" id="saAdminSearchInput" placeholder="输入管理员ID或用户名"
+                                        style="width: 140px; background: #2d2d42; border: 1px solid #555; color: #fff; padding: 6px 12px; border-radius: 4px; outline: none; font-size: 13px;"
+                                        onkeypress="if(event.key==='Enter') saConfirmAdminSearch()">
+                                    <button onclick="saConfirmAdminSearch()" class="sa-search-confirm-btn" style ="width:80px; padding: 8px 12px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;">确定</button>
+                                </div>
+                            </div>
+                            <div id="saAllAdminList" class="user-buttons-grid" style="margin-top: 20px; overflow-y: auto; grid-template-columns: repeat(4, 1fr); gap: 30px;"></div>
+                        </div>
+                    </div>
+
+
+                    <!-- 充值面板 (点击Recharge按钮显示) -->
+                    <div id="superAdminRechargeSection"
+                        style="display: none; height: 100%; padding: 20px; overflow-y: auto; position: relative;">
+                        <!-- 操作区域 - 第一行：用户验证输入 -->
+                        <div style="margin-bottom: 30px;">
+                            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                                <!-- 左边：用户验证区域（始终显示） -->
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="color: #10eb52; font-size: 16px; font-weight: bold; margin-left: 5px;margin-right: 5px; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; display: inline-block;">用户名:</span>
+                                    <input type="text" id="saRechargeUserIdInput" placeholder="输入用户名"
+                                        style="background: #2d2d42; border: 1px solid #3f3f5f; color: #fff; padding: 8px 12px; border-radius: 6px; width: 180px; font-size: 13px;"
+                                        onkeypress="if(event.key==='Enter') saVerifyRechargeUser()">
+                                </div>
+                                <button class="gui-btn primary" onclick="saVerifyRechargeUser()"
+                                    style="width: 80px; padding: 8px 12px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;">验证</button>
+
+                                <!-- 右边：充值操作区域（默认隐藏但保留位置空间） -->
+                                <div id="saRechargeActionPanel" style="visibility: hidden; opacity: 0; display: flex; align-items: center; gap: 15px; transition: opacity 0.3s ease;">
+                                    <div style="width: 1px; height: 30px; background: #3f3f5f;"></div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="color: #ccc; font-size: 14px;">充值金额:</span>
+                                        <input type="number" id="saRechargeAmountInput" placeholder="金额" step="0.01"
+                                            style="background: #2d2d42; border: 1px solid #3f3f5f; color: #fff; padding: 8px 12px; border-radius: 6px; width: 120px; font-size: 13px;">
+                                    </div>
+                                    <button class="gui-btn primary" onclick="saConfirmRecharge()"
+                                        style=" width:80px; padding: 8px 12px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;">充值</button>
+
+                                    <button class="gui-btn" onclick="saResetRecharge()"
+                                        style="width:80px; padding: 8px 12px; background:linear-gradient(135deg, #68b35700 0%, #3bd27057 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;">完成</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 用户信息区域 - 默认隐藏但保留位置空间 -->
+                        <div id="saRechargeUserInfoPanel" style="visibility: hidden; opacity: 0; min-height: 100px; transition: opacity 0.3s ease;">
+                            <div class="sa-recharge-user-info"
+                                style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 30px;">
+                                <div style="display: flex; gap: 12px;"><span style="color: #bbb; font-size: 15px;">用户名:</span> <span
+                                        id="saRechargeInfoUsername" style="color: #97eb58; font-weight: bold; font-size: 15px;">-</span></div>
+
+                                <div style="display: flex; gap: 12px;"><span style="color: #bbbbbb; font-size: 15px;">注册时间:</span> <span
+                                        id="saRechargeInfoCreated" style="color: #97eb58; font-size: 14px;">-</span></div>
+
+
+                                <div style="display: flex; gap: 12px;"><span style="color: #bbb; font-size: 15px;">总消费:</span> <span
+                                        id="saRechargeInfoTotalSpent" style="color: #ff9800; font-weight: bold; font-size: 15px;">-</span></div>
+
+
+                                <div style="display: flex; gap: 12px;"><span style="color: #bbb; font-size: 15px;">用户ID:</span> <span
+                                        id="saRechargeInfoUserId" style="color: #97eb58; font-weight: 500; font-size: 15px;">-</span></div>
+
+                                <div style="display: flex; gap: 12px;"><span style="color: #bbb; font-size: 15px;">上次充值:</span> <span
+                                        id="saRechargeInfoLastRecharge" style="color: #97eb58; font-size: 14px;">-</span></div>
+
+                                
+                                <div style="display: flex; gap: 12px;"><span style="color: #bbb; font-size: 15px;">当前余额:</span> <span
+                                        id="saRechargeInfoCredits" style="color: #00ff88; font-weight: bold; font-size: 16px;">-</span></div>        
+
+                                
+                            </div>
+                        </div>
+
+                        <!-- 充值记录按钮 - 固定在用户信息区域下面30px位置 -->
+                        <div id="saRechargeRecordsToggle" class="sa-recharge-toggle" onclick="saToggleRechargeRecords()" style="color: #dbeb10; font-size: 16px; font-weight: bold; margin-top: 30px; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; display: inline-block;">💰 充值记录
+                        </div>
+                        <!-- 充值记录内容 -->
+                        <div id="saRechargeRecordsList" class="sa-recharge-records" style="display: none; margin-top: 15px;">
+                        </div>
+                    </div>
+
+                    <!-- 费率设置 -->
+                    <div id="superAdminRatesSection" style="display: none; height: 100%; padding: 20px; overflow-y: auto; position: relative;">
+
+                        <!-- 1. 全局费率 -->
+                        <div style="margin-bottom: 50px;">  
+                            <div style="color: rgba(5, 238, 255, 0.9);font-size: 16px;font-weight: bold;margin-bottom: 15px;">全局费率</div>                          
+
+                            <!-- 全局费率设置 - 内联编辑模式 -->
+                            <div class="rate-row" id="saGlobalDisplay" style="margin-bottom: 15px; display: flex; align-items: center;">
+                                <span style="color:#ddd; font-size:14px;">发送: <input type="text" id="saGlobalSend" class="num-input send" value="-" readonly="" style="width: 60px;text-align: left;border: none;background: transparent;color: #0f0;font-weight:bold;padding: 5px 4px;transition: background 0.2s, border 0.2s; border-radius: 10px;"></span>
+                                <span style="color:#ddd; font-size:14px; margin-left:15px;">接收: <input type="text" id="saGlobalRecv" class="num-input recv" value="-" readonly="" style="width: 60px;text-align: left;border: none;background: transparent;color: #fff000;font-weight:bold;padding: 5px 4px;transition: background 0.2s, border 0.2s; border-radius: 10px;"></span>
+                                <span style="color:#ddd; font-size:14px; margin-left:15px;">失败: <input type="text" id="saGlobalFail" class="num-input fail" value="-" readonly="" style="width: 60px;text-align: left;border: none;background: transparent;color: #fc0000;font-weight:bold;padding: 5px 4px;transition: background 0.2s, border 0.2s; border-radius: 10px;"></span>
+                                <span style="color:#ddd; font-size:14px; margin-left:15px;">私享: <input type="text" id="saGlobalPrivate" class="num-input private" value="-" readonly="" style="width: 60px;text-align: left;border: none;background: transparent;color: #c505ef;font-weight:bold;padding: 5px 4px;transition: background 0.2s, border 0.2s; border-radius: 10px;"></span>
+                                <div style="display: flex; gap: 8px; margin-left: 20px;">
+                                    <button class="rate-btn danger" id="saGlobalCancelBtn" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #ff6b6b57 100%); color: white; border: 2px solid #ff6b6b57; border-radius: 18px; cursor: pointer;display: none;" onclick="saCancelGlobal()" >取消</button>
+                                    <button class="rate-btn warning" id="saGlobalResetBtn" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #ffd93d57 100%); color: white; border: 2px solid #ffd93d57; border-radius: 18px; cursor: pointer; display: none;" onclick="saResetGlobalToDefault()">重置</button>
+                                    <button class="rate-btn primary" id="saGlobalSaveBtn" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer; display: none;" onclick="saSaveGlobal()">确定</button>
+                                    <button class="rate-btn primary" id="saGlobalEditBtn" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;" onclick="saToggleGlobalEdit()">设置</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. 管理员费率范围 -->
+                        <div style="margin-bottom: 50px;">
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                                <div style="color: #4facfe; font-size: 16px; font-weight: bold;">管理员费率范围</div>
+                                <button class="rate-btn primary" id="saSalesSettingToggleBtn" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;" onclick="saToggleSalesSetting()">设置</button>
+                            </div>
+                            
+                            <!-- 输入框 + 验证按钮 (初始隐藏) -->
+                            <div id="saSalesInputArea" style="display: none;">
+                                <div class="rate-row" style="margin-bottom: 0;">
+                                    <label for="saSalesSearchUser">管理员ID：</label>
+                                    <input type="text" id="saSalesSearchUser" class="rate-input" style="width: 150px !important; background: #2d2d42; border-radius: 10px; height: 20px;" placeholder="用户名或ID" onkeypress="if(event.key==='Enter') saVerifySalesperson()">
+                                    <button class="rate-btn primary" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;" onclick="saVerifySalesperson()">验证</button>
+                                </div>
+                            </div>
+
+                            <!-- 验证通过后显示的设置区域 (初始隐藏) - 背景透明无框线 -->
+                            <div id="saSalesSettingArea" style="display: none; margin-top: 15px; padding: 15px 0; background: transparent; border: none;">
+                                <!-- 管理员信息 -->
+                                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <span style="color: #ddd; font-size:14px;">管理员: <span id="saSalesAdminId" style="color: #fcfcfc;font-weight:bold;">-</span></span>
+                                    <span style="color: #ddd; font-size:14px; margin-left:30px;">客户数: <span id="saSalesUserCount" style="color: #e2e22d;font-weight:bold;">0</span></span>
+                                    <span style="color: #ddd; font-size:14px; margin-left:30px;">业绩: <span id="saSalesPerformance" style="color: #e2e22d;font-weight:bold;">0</span></span>
+                                </div>
+                                <!-- 费率范围设置 -->
+                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <span style="color: #ddd; font-size:14px;">费率范围:</span>
+                                    <input type="number" id="saSalesRangeMin" class="rate-input" style="width: 80px !important; background: #2d2d42; border-radius: 10px; height: 20px;" step="0.0001" min="0.0001" placeholder="最小值">
+                                    <span style="color: #fff;">-</span>
+                                    <input type="number" id="saSalesRangeMax" class="rate-input" style="width: 80px !important; background: #2d2d42; border-radius: 10px; height: 20px;" step="0.0001" min="0.0001" placeholder="最大值">
+                                    <div style="flex: 1;"></div>
+                                    <button class="rate-btn danger" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #ff6b6b57 100%); color: white; border: 2px solid #ff6b6b57; border-radius: 18px; cursor: pointer;" onclick="saCancelSales()">取消</button>
+                                    <button class="rate-btn warning" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffd93d57 0%, #ffa50257 100%); color: white; border: 2px solid #ffd93d57; border-radius: 18px; cursor: pointer;" onclick="saResetSalesRate()">重置</button>
+                                    <button class="rate-btn primary" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #00ff8857 0%, #00ff8857 100%); color: white; border: 2px solid #00ff8857; border-radius: 18px; cursor: pointer;" onclick="saSaveSales()">保存</button>
+                                </div>
+                            </div>
+                        </div>      
+
+                        <!-- 3. 用户费率 -->
+                        <div style="margin-bottom: 25px;">
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                                <div style="color: #00ff88; font-size: 16px; font-weight: bold;">用户费率</div>
+                                <button class="rate-btn primary" id="saUserSettingToggleBtn" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;" onclick="saToggleUserSetting()">设置</button>
+                            </div>
+                            
+                            <!-- 输入框 + 验证按钮 (初始隐藏) -->
+                            <div id="saUserInputArea" style="display: none;">
+                                <div class="rate-row" style="margin-bottom: 0;">
+                                    <label for="saUserSearchName">用户ID：</label>
+                                    <input type="text" id="saUserSearchName" class="rate-input" style="width: 150px !important; background: #2d2d42; border-radius: 10px; height: 20px;" placeholder="用户名或ID" onkeypress="if(event.key==='Enter') saVerifyUser()">
+                                    <button class="rate-btn primary" style="width: 50px; padding: 5px 8px; background:linear-gradient(135deg, #ffffff00 0%, #b6b6ff57 100%); color: white; border: 2px solid #202dde57; border-radius: 18px; cursor: pointer;" onclick="saVerifyUser()">验证</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 设置区域 (初始隐藏) - 背景透明无框线 -->
+                            <div id="saUserSettingArea" style="display: none; margin-top: 15px; padding: 15px 0; background: transparent; border: none;">
+                                <!-- 用户信息 -->
+                                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 30px;">
+                                    <span style="color: #ddd; font-size:14px;">用户名: <span id="saUserInfoName" style="color: rgba(255, 255, 255, 0.9);font-weight:bold;">-</span></span>
+                                    <span style="color: #ddd; font-size:14px;">用户ID: <span id="saUserInfoId" style="color: #4facfe;font-weight:bold;">-</span></span>
+                                    <span style="color: #ddd; font-size:14px;">余额: <span id="saUserInfoCredits" style="color:#00ff88; font-weight:bold;">0</span></span>
+                                    <span style="color: #ddd; font-size:14px;">总发送: <span id="saUserInfoSendCount" style="color:#00ff88; font-weight:bold;">0</span></span>
+                                    <span style="color: #ddd; font-size:14px;">总充值: <span id="saUserInfoTotalRecharge" style="color:#e2e22d; font-weight:bold;">0</span></span>
+                                    <span style="color: #ddd; font-size:14px;">历史消费: <span id="saUserInfoTotalSpent" style="color:#ff9800; font-weight:bold;">0</span></span>
+                                </div>
+                                
+                                <!-- 当前费率显示 -->
+                                <div style="margin-bottom: 15px; padding: 10px 0;">
+                                    <span style="color: #888; font-size:13px;">当前费率:</span>
+                                    <span style="color: #0f0; font-size:13px; margin-left:10px;">发送: <span id="saUserCurrentSend">-</span></span>
+                                    <span style="color: #fff000; font-size:13px; margin-left:15px;">接收: <span id="saUserCurrentRecv">-</span></span>
+                                    <span style="color: #fc0000; font-size:13px; margin-left:15px;">失败: <span id="saUserCurrentFail">-</span></span>
+                                    <span style="color: #c505ef; font-size:13px; margin-left:15px;">私享: <span id="saUserCurrentPrivate">-</span></span>
+                                </div>
+                                
+                                <!-- 费率设置 -->
+                                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                    <span style="color: #ddd; font-size:14px;">发送:</span>
+                                    <input type="text" id="saUserSend" class="num-input send editing" value="-" style="width: 70px; text-align: center; border: none; background: #2d2d42; color:#0f0; font-weight:bold; padding: 4px 8px; border-radius: 8px;">
+                                    
+                                    <span style="color: #ddd; font-size:14px;">接收:</span>
+                                    <input type="text" id="saUserRecv" class="num-input recv editing" value="-" style="width: 70px; text-align: center; border: none; background: #2d2d42; color:#fff000; font-weight:bold; padding: 4px 8px; border-radius: 8px;">
+                                    
+                                    <span style="color: #ddd; font-size:14px;">失败:</span>
+                                    <input type="text" id="saUserFail" class="num-input fail editing" value="-" style="width: 70px; text-align: center; border: none; background: #2d2d42; color:#fc0000; font-weight:bold; padding: 4px 8px; border-radius: 8px;">
+                                    
+                                    <span style="color: #ddd; font-size:14px;">私享:</span>
+                                    <input type="text" id="saUserPrivate" class="num-input private editing" value="-" style="width: 70px; text-align: center; border: none; background: #2d2d42; color:#c505ef; font-weight:bold; padding: 4px 8px; border-radius: 8px;">
+                                    
+                                    <div style="flex: 1;"></div>
+                                    
+                                    <button class="rate-btn danger" style="width: 60px; padding: 5px 12px; background:linear-gradient(135deg, #ffffff00 0%, #ff6b6b57 100%); color: white; border: 2px solid #ff6b6b57; border-radius: 18px; cursor: pointer;" onclick="saCancelUser()">取消</button>
+                                    <button class="rate-btn warning" style="width: 60px; padding: 5px 12px; background:linear-gradient(135deg, #ffd93d57 0%, #ffa50257 100%); color: white; border: 2px solid #ffd93d57; border-radius: 18px; cursor: pointer;" onclick="saResetUserRate()">重置</button>
+                                    <button class="rate-btn primary" style="width: 60px; padding: 5px 12px; background:linear-gradient(135deg, #00ff8857 0%, #00ff8857 100%); color: white; border: 2px solid #00ff8857; border-radius: 18px; cursor: pointer;" onclick="saSaveUser()">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 日志面板 -->
+                    <div id="superAdminLogsSection" style="display: none; height: 100%; padding: 20px; overflow-y: auto;">
+                        <!-- 统计面板 -->
+                        <div id="logStatsPanel" style="display: flex; gap: 15px; margin-bottom: 15px; padding: 15px; background: rgba(30, 41, 59, 0.6); border-radius: 10px; border: 1px solid rgba(79, 172, 254, 0.2);">
+                            <div style="flex: 1; text-align: center; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                                <div style="font-size: 12px; color: #888; margin-bottom: 5px;">今日日志</div>
+                                <div id="logStatTotal" style="font-size: 24px; font-weight: bold; color: #4facfe;">0</div>
+                                <div style="font-size: 11px; color: #666;">条</div>
+                            </div>
+                            <div style="flex: 1; text-align: center; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                                <div style="font-size: 12px; color: #888; margin-bottom: 5px;">错误率</div>
+                                <div id="logStatErrorRate" style="font-size: 24px; font-weight: bold; color: #00ff88;">0%</div>
+                                <div style="font-size: 11px; color: #666;">ERROR占比</div>
+                            </div>
+                            <div style="flex: 1; text-align: center; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                                <div style="font-size: 12px; color: #888; margin-bottom: 5px;">主要来源</div>
+                                <div id="logStatTopSource" style="font-size: 18px; font-weight: bold; color: #ffd93d;">-</div>
+                                <div style="font-size: 11px; color: #666;">最活跃</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 搜索和来源筛选 -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+                            <input type="text" id="logSearchInput" placeholder="搜索日志内容..." oninput="filterLogs()" style="flex: 1; padding: 8px 12px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(79, 172, 254, 0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            <select id="logSourceFilter" onchange="filterLogs()" style="padding: 8px 12px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(79, 172, 254, 0.3); border-radius: 8px; color: #fff; font-size: 13px; cursor: pointer;">
+                                <option value="all">所有来源</option>
+                                <option value="api">[API]</option>
+                                <option value="html">[HTML]</option>
+                                <option value="redis">[REDIS]</option>
+                                <option value="worker">[WORKER]</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; align-items: center;">
+                            <span id="currentLogTypeLabel" style="color: #4facfe; font-size: 14px; font-weight: bold; margin-right: auto;">INFO（信息类）</span>
+                            <button id="btnLogAutoRefresh" onclick="toggleLogAutoRefresh()" class="log-action-btn auto-refresh-btn" style="width: 100px; padding: 8px; background: linear-gradient(135deg, #666 0%, #444 100%); color: white; border: 2px solid #666; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.3s;">自动刷新: OFF</button>
+                            <button id="btnLogClear" onclick="clearLogs()" class="log-action-btn clear-btn" style="width: 80px; padding: 8px; background: linear-gradient(135deg, #ff5252 0%, #ff1744 100%); color: white; border: 2px solid #ff5252; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s;">清空</button>
+                            <button id="btnLogRefresh" onclick="refreshLogs()" class="log-action-btn refresh-btn" style="width: 80px; padding: 8px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: 2px solid #4facfe; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s;">刷新</button>
+                            <button id="btnLogExport" onclick="exportLogs()" class="log-action-btn export-btn" style="width: 80px; padding: 8px; background: linear-gradient(135deg, #00ff88 0%, #00e676 100%); color: white; border: 2px solid #00ff88; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s;">导出</button>
+                        </div>
+                        <div id="superAdminLogContent" style="min-height: 400px; max-height: calc(100vh - 200px); overflow-y: auto; padding: 10px; font-family: monospace; font-size: 12px; color: #ccc;">
+                            <!-- 日志内容 -->
+                        </div>
+                    </div>
+
+                    <!-- Worker Control Panel -->
+                    <div class="worker-control-panel" id="superAdminDetailSection" style="display: none;">
+                        <div class="worker-control-header">
+                            <button class="worker-control-back-btn wc-back-btn" onclick="closeWorkerControlPanel()">
+                                <span class="back-icon">←</span>
+                                <span class="back-label">返回</span>
+                            </button>
+                            <div class="worker-control-status" id="workerControlStatus">
+                                <span class="status-icon">✅</span>
+                                <span class="status-text">Running</span>
+                            </div>
+                        </div>
+                        <div class="worker-control-body">
+                            <!-- 左侧信息面板 -->
+                            <div class="wc-info-section">
+                                <!-- Worker ID 显示区域 -->
+                                <div class="wc-worker-id-display" id="wcWorkerIdDisplay">-</div>
+                                <!-- 基本信息 - 紫色边框 -->
+                                <div class="wc-info-category cat-purple">
+                                    <div class="wc-cat-title">基本信息</div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">电话号码</span>
+                                        <span class="val val-editable" id="wcPhone" onclick="makeEditable(this, 'phone')">-</span>
+                                    </div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">Email</span>
+                                        <span class="val val-editable" id="wcEmail" onclick="makeEditable(this, 'email')">-</span>
+                                    </div>
+                                </div>
+                                <!-- 连接信息 - 蓝色边框 -->
+                                <div class="wc-info-category cat-blue">
+                                    <div class="wc-cat-title">连接信息</div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">API</span>
+                                        <span class="val" id="wcApiUrl">-</span>
+                                    </div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">Port</span>
+                                        <span class="val" id="wcPort">-</span>
+                                    </div>
+                                </div>
+<!-- 任务统计 - 绿色边框 -->
+                                <div class="wc-info-category cat-green">
+                                    <div class="wc-cat-title">任务统计</div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">Shards</span>
+                                        <span class="val" id="wcShards">0</span>
+                                    </div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">已发送</span>
+                                        <span class="val" id="wcMessages">0</span>
+                                    </div>
+                                    <div class="wc-info-item-row">
+                                        <span class="lbl">成功率</span>
+                                        <span class="val hl" id="wcSuccessRate">0%</span>
+                                    </div>
+                                </div>
+                                <!-- 系统状态 - 黄色边框，直接显示内容 -->
+                                <div class="wc-info-category cat-status">
+                                    <div class="wc-cat-title">系统状态</div>
+                                    <div class="wc-sys-status-content" id="wcSysStatusContent">
+                                        <div class="wc-sys-loading">加载中...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 中间工具区 -->
+                            <div class="wc-tools-section">
+                                <div class="wc-tools-main">
+                                    <div class="wc-panel-label">修复工具</div>
+                                    <div class="wc-tools-grid">
+                                        <button class="wc-tool-btn" onclick="sendWorkerCommand('diagnose')">
+                                            <span class="tool-icon">🔍</span>
+                                            <span class="tool-label">系统检测</span>
+                                        </button>
+                                        <button class="wc-tool-btn" onclick="sendWorkerCommand('db_diagnose')">
+                                            <span class="tool-icon">🗄️</span>
+                                            <span class="tool-label">数据库检测</span>
+                                        </button>
+                                        <button class="wc-tool-btn success" onclick="sendWorkerCommand('fix_permission')">
+                                            <span class="tool-icon">🔐</span>
+                                            <span class="tool-label">权限修复</span>
+                                        </button>
+                                        <button class="wc-tool-btn warning" onclick="sendWorkerCommand('clear_inbox')">
+                                            <span class="tool-icon">🗑️</span>
+                                            <span class="tool-label">清空收件箱</span>
+                                        </button>
+                                        <button class="wc-tool-btn danger" onclick="sendWorkerCommand('hard_reset')">
+                                            <span class="tool-icon">⚡</span>
+                                            <span class="tool-label">超级修复</span>
+                                        </button>
+                                    </div>
+                                    <div class="wc-panel-label" style="margin-top: 16px;">远程操作</div>
+                                    <div class="wc-tools-grid">
+                                        <button class="wc-tool-btn purple" onclick="takeWorkerScreenshot()">
+                                            <span class="tool-icon">📸</span>
+                                            <span class="tool-label">远程截图</span>
+                                        </button>
+                                        <button class="wc-tool-btn info" onclick="viewAccountScreenshot()">
+                                            <span class="tool-icon">👁️</span>
+                                            <span class="tool-label">查看账户截图</span>
+                                        </button>
+                                    </div>
+
+                                    <div id="wcScreenshotArea" style="display:none; margin-top:12px;">
+                                        <div style="font-size:12px; color:#bbb; margin-bottom:6px;">截图预览（点击放大）</div>
+                                        <img id="wcScreenshotImg" src="" alt="screenshot" onclick="openWcScreenshotModal()" style="width:100%; max-height:240px; object-fit:contain; border-radius:10px; border:1px solid rgba(255,255,255,0.12); cursor:zoom-in; background:rgba(0,0,0,0.25);" />
+                                    </div>
+                                </div>
+                                <!-- 控制台固定底部 -->
+                                <div class="wc-console-fixed">
+                                    <div class="wc-console-header">
+                                        <span>💻 控制台</span>
+                                        <button class="console-clear-btn" onclick="clearWorkerConsole()">清空</button>
+                                    </div>
+                                    <div class="wc-console-output" id="workerConsole">
+                                        <div class="console-line info">
+                                            <span class="timestamp">--:--:--</span>
+                                            Ready for commands...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 右侧账号管理面板 -->
+                            <div class="wc-account-section">
+                                <div class="wc-panel-label">当前账号</div>
+                                <div class="wc-current-account">
+                                    <div class="account-status">
+                                        <span class="account-icon" id="wcAccountIcon">🔓</span>
+                                        <div class="account-info">
+                                            <div class="account-label">状态</div>
+                                            <div class="account-value" id="wcCurrentAccount">未登录</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wc-login-form">
+                                    <div class="wc-input-group">
+<label for="wcLoginId">APPLE ID</label>
+                                        <input type="text" id="wcLoginId" placeholder="输入Apple ID">
+                                    </div>
+                                    <div class="wc-input-group">
+                                        <label for="wcLoginPassword">PASSWORD</label>
+                                        <div class="wc-password-wrapper">
+                                            <input type="password" id="wcLoginPassword" placeholder="输入密码">
+                                            <button class="wc-password-toggle" onclick="toggleWcPassword()">👁</button>
+                                        </div>
+                                    </div>
+                                    <div class="wc-login-actions">
+                                        <button class="wc-login-btn" onclick="wcLogin()">登录</button>
+                                        <button class="wc-logout-btn" onclick="confirmWcLogout()">退出</button>
+                                    </div>
+                                </div>
+                                <div class="wc-id-library">
+                                    <div class="id-library-header">
+                                        <span class="id-library-title">ID列表</span>
+                                        <button class="id-library-toggle" onclick="toggleWcIdList()">📋</button>
+                                    </div>
+                                    <div class="wc-id-list" id="wcIdList" style="display: none;">
+                                        <div class="wc-id-empty">暂无账号</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="wcScreenshotModal" onclick="closeWcScreenshotModal()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">
+                                <img id="wcScreenshotModalImg" src="" alt="screenshot" style="max-width:92vw; max-height:92vh; object-fit:contain; border-radius:12px; border:1px solid rgba(255,255,255,0.18); background:rgba(0,0,0,0.35);" />
+                            </div>
+                            <div id="wcCaptchaDialog" class="wc-captcha-dialog" style="display:none;">
+                                <div class="wc-captcha-panel">
+                                    <div class="wc-captcha-head">
+                                        <div class="wc-captcha-title"><span class="wc-captcha-dot"></span> 正在登录...</div>
+                                        <button class="wc-captcha-close" onclick="closeWcCaptchaDialog()">×</button>
+                                    </div>
+                                    <div class="wc-captcha-body">
+                                        <img id="wcCaptchaScreenshot" src="" alt="登录截图" />
+                                        <div class="wc-captcha-status" id="wcCaptchaStatus">等待登录结果...</div>
+                                        <div class="wc-captcha-input-group" id="wcCaptchaInputGroup">
+                                            <label for="wcCaptchaInput">验证码</label>
+                                            <input type="text" id="wcCaptchaInput" placeholder="输入验证码" autocomplete="off" />
+                                        </div>
+                                        <div class="wc-captcha-actions">
+                                            <button class="wc-captcha-btn wc-captcha-cancel" onclick="closeWcCaptchaDialog()">取消</button>
+                                            <button class="wc-captcha-btn wc-captcha-confirm" onclick="submitWcCaptchaCode()">确定</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 系统状态弹窗 -->
+                            <div class="wc-sys-dialog" id="wcSysDialog" style="display: none;">
+                                <div class="wc-sys-dialog-content">
+                                    <div class="wc-sys-dialog-header">
+                                        <span class="wc-sys-dialog-title">
+                                            <span>📊</span> 系统状态
+                                        </span>
+                                        <button class="wc-sys-dialog-close" onclick="closeWcSystemDialog()">×</button>
+                                    </div>
+                                    <div class="wc-sys-dialog-body" id="wcSysDialogContent">
+                                        <div class="wc-sys-loading">
+                                            <div class="loading-spinner"></div>
+                                            <span>正在获取系统信息...</span>
+                                        </div>
+                                    </div>
+                                    <div class="wc-sys-footer">
+                                        <button class="wc-sys-ok-btn" onclick="closeWcSystemDialog()">确定</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 退出确认弹窗 -->
+                            <div class="wc-confirm-dialog" id="wcLogoutDialog" style="display: none;">
+                                <div class="wc-confirm-content">
+                                    <div class="wc-confirm-title">确认退出</div>
+                                    <div class="wc-confirm-msg">确定要退出当前账号吗？</div>
+                                    <div class="wc-confirm-btns">
+                                        <button class="wc-confirm-cancel" onclick="closeWcLogoutDialog()">取消</button>
+                                        <button class="wc-confirm-ok" onclick="confirmWcLogoutExecute()">确认退出</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--#endregion -->
+
+    <!--#endregion -->
+
+    <!--#region   Script -->
+
+    <script>
+        // 全局API基础URL配置
+        window.API_BASE_URL = window.location.origin;
+    </script>
+    <script src="static/10storage.js"></script>
+    <script src="static/11logic_sign_login.js"></script>
+    <script src="static/14dadfunction.js"></script>
+    <script src="static/12admin_page.js"></script>
+    <script src="static/13server_page.js"></script>
+    <script src="static/15fordisplay.js"></script>
+    <script src="static/16superadmin_page.js"></script>
+
+    <!--#endregion -->
+
+</body>
+
+</html>
